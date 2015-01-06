@@ -114,6 +114,9 @@ Element providing reverse geocoding handling (currently against OSM.)
        * @param response as got from nominatim
        */
       fireAddress: function(response) {
+        if(!response) {
+          return false;
+        }
         var address = response.address.country || response.address.address100 || 'World';
         if (response.address.city || response.address.town) {
           address += ', ' + (response.address.city || response.address.town);
