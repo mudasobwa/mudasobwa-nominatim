@@ -29,7 +29,7 @@
     document.addEventListener('polymer-ready', function() {
       var nominatim = document.querySelector("#nominatim");
       nominatim.addEventListener("mudasobwa-nominatim-response", function(e) {
-        alert("Address got for [latitude:41.4034, longitude:2.1591]:\n\n" + e.detail.address);
+        console.log(e.detail);
       });
       var nominatim2 = document.querySelector("#nominatim2");
       nominatim2.addEventListener("mudasobwa-nominatim-response", function(e) {
