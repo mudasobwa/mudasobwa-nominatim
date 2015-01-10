@@ -6,14 +6,16 @@ Element providing reverse geocoding handling (currently against OSM.)
 
 ##### Example
 
-    <mudasobwa-nominatim auto></mudasobwa-nominatim>
+    <mudasobwa-nominatim latitude="41.03" longitude="2.10"></mudasobwa-nominatim>
+
+The underlaying ajax request would not DOS Nominatim service.
 
 @element mudasobwa-nominatim
 @blurb Element providing reverse geocoding.
 @status alpha
 @homepage http://polymerlabs.github.io/mudasobwa-nominatim
 -->
-<polymer-element name="mudasobwa-nominatim" attributes="auto latitude longitude language zoom" hidden>
+<polymer-element name="mudasobwa-nominatim" attributes="auto latitude longitude language zoom latency" hidden>
 
   <template>
     <core-ajax  id="handler"
@@ -53,6 +55,15 @@ Element providing reverse geocoding handling (currently against OSM.)
       longitude: null,
 
       /**
+      * `latency` is a delay between concurrent requests to noninatim.
+      *
+      * @property latency
+      * @type number
+      * @default 1000
+      */
+      latency: 1000,
+
+      /**
       * `language` is a language to retrieve reverse geo info for.
       *
       * @property language
@@ -70,8 +81,19 @@ Element providing reverse geocoding handling (currently against OSM.)
       */
       zoom: 18,
 
+      created: function() {
+        this.timeoutId = null;
+      },
+
       // More info: http://www.polymer-project.org/docs/polymer/polymer.html#lifecyclemethods
       ready: function() {
+      },
+
+      queue: function() {
+        if (this.timeoutId) {
+          window.clearTimeout(this.timeoutId);
+        }
+        this.timeoutId = window.setTimeout(function(self) { self.go(); }, this.latency, this);
       },
 
       /**
@@ -80,7 +102,10 @@ Element providing reverse geocoding handling (currently against OSM.)
        * @method go
        */
       go: function() {
-        this.$.handler.go();
+        this.timeoutId = null;
+        if (this.latitude && this.longitude) {
+          this.$.handler.go();
+        }
       },
 
       /**
@@ -92,9 +117,16 @@ Element providing reverse geocoding handling (currently against OSM.)
         this.fireAddress(this.$.handler.response);
       },
 
-      /** FIXME will execute two subsequent requests when set to `true` */
-      autoChanged: function() {
-        this.$.handler.auto = this.auto;
+      attributeChanged: function(attr, old, neu) {
+        switch(attr) {
+          case 'auto':
+            if (neu) { this.go(); }
+            break;
+          case 'latitude':
+          case 'longitude':
+            this.queue();
+            break;
+        }
       },
 
       /**
