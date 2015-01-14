@@ -81,19 +81,12 @@ The underlaying ajax request would not DOS Nominatim service.
       */
       zoom: 18,
 
-      created: function() {
-        this.timeoutId = null;
-      },
-
       // More info: http://www.polymer-project.org/docs/polymer/polymer.html#lifecyclemethods
       ready: function() {
       },
 
       queue: function() {
-        if (this.timeoutId) {
-          window.clearTimeout(this.timeoutId);
-        }
-        this.timeoutId = window.setTimeout(function(self) { self.go(); }, this.latency, this);
+        this.job('nominatim-job', function() { this.go(); }, this.latency);
       },
 
       /**
@@ -102,7 +95,6 @@ The underlaying ajax request would not DOS Nominatim service.
        * @method go
        */
       go: function() {
-        this.timeoutId = null;
         if (this.latitude && this.longitude) {
           this.$.handler.go();
         }

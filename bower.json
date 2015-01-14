@@ -12,7 +12,7 @@
   "ignore": [],
   "main": "mudasobwa-nominatim.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^0.5.1",
+    "polymer": "Polymer/polymer#^0.5.2",
     "core-ajax": "Polymer/core-ajax#^0.5.2"
   },
   "devDependencies": {
